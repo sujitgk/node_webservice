@@ -12,7 +12,21 @@ const auth = require("./middleware/auth");
 //const {join} = require('path');
 //const morgan = require("morgan");
 //const cors = require("cors");
-const swaggerUI = require("swagger-ui-express");
+const swaggerUI =  require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Node web service',
+      version: '1.0.0',
+    },
+  },
+  apis: ['app.js'], // files containing annotations as above
+};
+
+const swaggerDocs = swaggerJsdoc(options);
 //const docs = require('./docs');
 
 //const YAML = require('yamljs');
@@ -22,10 +36,68 @@ const app = express();
 //const swaggerDoc = YAML.load('./api/swagger.yaml');
 app.use(express.json());
 
-app.post("/welcome", auth, (req, res) => {
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
+app.get("/", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
 
+
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     description: Register new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 description: The user's first_name.
+ *                 example: Leanne
+ *               last_name:
+ *                 type: string
+ *                 description: The user's last_name.
+ *                 example: Graham
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *                 example: example@example.com
+ *               summary:
+ *                 type: string
+ *                 description: The user's summary.
+ *                 example: test
+ *               phone:
+ *                 type: string
+ *                 description: The user's phone.
+ *                 example: (+91) 987654321
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *                 example: password@123
+ *     responses:
+ *       201:
+ *        description: "User info"
+ *       400:
+ *         description: "Need all required fields"
+ *       409:
+ *         description: "User already exists"
+ *       500:
+ *         description: "Error"
+ */
 app.post("/register", async (req, res) => {
 
   // Our register logic starts here
@@ -75,13 +147,43 @@ app.post("/register", async (req, res) => {
     res.status(201).json(user);
   } catch (err) {
     console.log(err);
+    res.status(500).json("Something went wrong. Please contact Admin");
   }
   // Our register logic ends here
 });
 
   
-  // Login
-  app.post("/login", async (req, res) => {
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     description: Login user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:          
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *                 example: example@example.com
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *                 example: password@123
+ *     responses:
+ *       201:
+ *        description: "User info"
+ *       400:
+ *         description: "Need all required fields"
+ *       401:
+ *         description: "Invalid credentials"
+ *       500:
+ *         description: "Error"
+ */
+app.post("/login", async (req, res) => {
 
     // Our login logic starts here
     try {
@@ -111,14 +213,42 @@ app.post("/register", async (req, res) => {
         // user
         res.status(200).json(user);
       }
-      res.status(400).send("Invalid Credentials");
+      res.status(401).send("Invalid Credentials");
     } catch (err) {
       console.log(err);
+      res.status(500).send("Something went wrong. please contact Admin");
     }
     // Our register logic ends here
   });
 
-  app.post("/getContactbyEmail", auth, async (req, res) => {
+/**
+ * @swagger
+ * /contact:
+ *   post:
+ *     description: Get Contact Details of email
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:             
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *                 example: example@example.com
+ *     responses:
+ *       200:
+ *        description: "User info"
+ *       400:
+ *         description: "Need all required fields"
+ *       409:
+ *         description: "Invalid email"
+ *       500:
+ *         description: "Error"
+ */
+ 
+app.post("/contact", auth, async (req, res) => {
 
     // Our contact logic starts here
     try {
@@ -137,14 +267,26 @@ app.post("/register", async (req, res) => {
         // user
         res.status(200).json(user);
       }
-      res.status(400).send("Invalid Email");
+      res.status(409).send("Invalid Email");
     } catch (err) {
       console.log(err);
+      res.status(500).send("Something went wrong. please contact Admin");
     }
     // Our register logic ends here
   });
 
-  app.post("/getClientList", auth, async (req, res) => {
+/**
+ * @swagger
+ * /client:
+ *   post:
+ *     description: Get all clients
+ *     responses:
+ *       200:
+ *        description: "client List"
+ *       500:
+ *         description: "Error"
+ */
+app.post("/client", auth, async (req, res) => {
 
     // Our contact logic starts here
     try {
@@ -169,7 +311,7 @@ app.post("/register", async (req, res) => {
       res.status(500).send("Something went wrong. Please contact admin");
     }
     // Our register logic ends here
-  });
+});
 
 // Logic goes here
 
