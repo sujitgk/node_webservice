@@ -22,7 +22,7 @@ const app = express();
 //const swaggerDoc = YAML.load('./api/swagger.yaml');
 app.use(express.json());
 
-app.post("/welcome", auth, (req, res) => {
+app.post("/", (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
 
