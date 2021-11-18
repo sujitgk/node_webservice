@@ -22,7 +22,7 @@ const app = express();
 //const swaggerDoc = YAML.load('./api/swagger.yaml');
 app.use(express.json());
 
-app.post("/", (req, res) => {
+app.post("/welcome", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
 
@@ -31,7 +31,7 @@ app.post("/register", async (req, res) => {
   // Our register logic starts here
   try {
     // Get user input
-    const { first_name, last_name, email, password } = req.body;
+    const { first_name, last_name, email, password,phone, summary } = req.body;
 //console.log(first_name);
     // Validate user input
    // console.log('ddd');
@@ -54,7 +54,7 @@ app.post("/register", async (req, res) => {
     const user = await User.create({
       first_name,
       last_name,
-      summery,
+      summary,
       phone,
       email: email.toLowerCase(), // sanitize: convert email to lowercase
       password: encryptedPassword,
