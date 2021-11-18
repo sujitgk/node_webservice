@@ -237,6 +237,9 @@ app.post("/login", async (req, res) => {
  *                 type: string
  *                 description: The user's email.
  *                 example: example@example.com
+ *               token:
+ *                 type: string
+ *                 description: Auth token returned in login API.
  *     responses:
  *       200:
  *        description: "User info"
@@ -280,6 +283,16 @@ app.post("/contact", auth, async (req, res) => {
  * /client:
  *   post:
  *     description: Get all clients
+*     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:           
+ *               token:
+ *                 type: string
+ *                 description: Auth token returned in login API.
  *     responses:
  *       200:
  *        description: "client List"
